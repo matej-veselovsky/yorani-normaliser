@@ -1,3 +1,5 @@
+import sys
+
 def replaceDelimiters(csv_file):
     data = ""
 
@@ -8,8 +10,9 @@ def replaceDelimiters(csv_file):
         file.truncate()
         file.write(data)
 
-def main():
-    replaceDelimiters("yoranish.csv")
+def main(file):
+    replaceDelimiters(file)
 
 if (__name__ == "__main__"):
-    main()
+    file = str(sys.argv[1])
+    main(file)
