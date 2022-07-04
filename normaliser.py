@@ -1,24 +1,25 @@
 import sys
 import csv
+import sqlite3
 
 
-def replaceDelimiters(csv_file):
+def replaceDelimiters(csvFile):
     data = ""
 
-    with open(csv_file, mode="r", encoding="utf-8-sig") as file:
+    with open(csvFile, mode="r", encoding="utf-8-sig") as file:
         data = file.read().replace("\\,", ",").replace("\\", ",").replace("/", ",")
 
-    with open(csv_file, mode="w") as file:
+    with open(csvFile, mode="w") as file:
         file.truncate()
         file.write(data)
 
     print("Delimiters replaced.")
 
 
-def dropDescription(csv_file):
+def dropDescription(csvFile):
     data = ""
 
-    with open(csv_file, mode="r", encoding="utf-8-sig") as file:
+    with open(csvFile, mode="r", encoding="utf-8-sig") as file:
         reader = csv.reader(file)
 
         for row in reader:
@@ -31,17 +32,17 @@ def dropDescription(csv_file):
                     break # continue in next row
             data += "\n"
     
-    with open(csv_file, mode="w") as file:
+    with open(csvFile, mode="w") as file:
         file.truncate()
         file.write(data)
 
     print("Description dropped.")
 
 
-def createFeminine(csv_file):
+def createFeminine(csvFile):
     data = ""
 
-    with open(csv_file, mode="r", encoding="utf-8-sig") as file:
+    with open(csvFile, mode="r", encoding="utf-8-sig") as file:
         reader = csv.reader(file)
 
         for row in reader:
@@ -80,17 +81,17 @@ def createFeminine(csv_file):
                     addition += element + ","
             data += addition.rstrip(",") + "\n"
 
-    with open(csv_file, mode="w", encoding="utf-8-sig") as file:
+    with open(csvFile, mode="w", encoding="utf-8-sig") as file:
         file.truncate()
         file.write(data)
 
     print("Feminines created.")
 
 
-def separateGenders(csv_file):
+def separateGenders(csvFile):
     data = ""
 
-    with open(csv_file, mode="r", encoding="utf-8-sig") as file:
+    with open(csvFile, mode="r", encoding="utf-8-sig") as file:
         reader = csv.reader(file)
 
         for row in reader:
@@ -128,26 +129,48 @@ def separateGenders(csv_file):
                 feminineRow = feminineRow.rstrip(",") + "\n"
                 data += masculineRow + feminineRow
 
-    with open(csv_file, mode="w", encoding="utf-8-sig") as file:
+    with open(csvFile, mode="w", encoding="utf-8-sig") as file:
         file.truncate()
         file.write(data)
 
     print("Gendered adjectives separated.")
 
-                    
+
+def createDatabase(csvFile, dbFile):
+    with sqlite3.connect(dbFile) as con:
+        cur = con.cursor()
+        
+        cur.execute('''CREATE TABLE IF NOT EXISTS yorani_words (
+            yorani_id INTEGER PRIMARY KEY,
+            yorani_word TEXT NOT NULL
+        );''')
+
+        cur.execute('''CREATE TABLE IF NOT EXISTS czech_words (
+            czech_id INTEGER PRIMARY KEY,
+            czech_word TEXT NOT NULL,
+            reference_id INTEGER,
+            FOREIGN KEY (reference_id) REFERENCES yorani_words(yorani_id)
+        );''')
+
+        con.commit()
+    
+    print(f"Database created at {dbFile}")
 
 
-def main(file):
+def main(inputFile, outputFile):
     print("Initiating...")
     
-    replaceDelimiters(file)
-    dropDescription(file)
-    createFeminine(file)
-    separateGenders(file)
+    replaceDelimiters(inputFile)
+    dropDescription(inputFile)
+    createFeminine(inputFile)
+    separateGenders(inputFile)
+    createDatabase(inputFile, outputFile)
 
     print("Finished successfully!")
 
 
 if (__name__ == "__main__"):
-    file = str(sys.argv[1])
-    main(file)
+    inputFile = str(sys.argv[1])
+    outputFile = str(sys.argv[2])
+    
+    main(inputFile, outputFile)
