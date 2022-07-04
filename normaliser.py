@@ -87,12 +87,63 @@ def createFeminine(csv_file):
     print("Feminines created.")
 
 
+def separateGenders(csv_file):
+    data = ""
+
+    with open(csv_file, mode="r", encoding="utf-8-sig") as file:
+        reader = csv.reader(file)
+
+        for row in reader:
+            if row[1][0] != "0":
+                for element in row:
+                    data += element + ","
+                data = data.rstrip(",") + "\n"
+            else:
+                firstRealPosition = 2
+                masculineRow = ""
+                feminineRow = ""
+                
+                while row[firstRealPosition][0] == "-":
+                    firstRealPosition += 1
+                
+                softMarker = row[firstRealPosition][-1]
+                masculineRow += row[0] + ","
+                feminineRow += row[1][1:] + ","     #get rid of 0 
+                
+                if softMarker == "í":
+                    for i in range(firstRealPosition, len(row)):
+                        masculineRow += row[i] + ","
+                        feminineRow += row[i] + ","
+                    
+                else:
+                    firstFemPosition = 2 + (len(row) - firstRealPosition) / 2
+
+                    for i in range(firstRealPosition, len(row)):
+                        if i < firstFemPosition:
+                            masculineRow += row[i] + ","
+                        else:
+                            feminineRow += row[i] + ","
+
+                masculineRow = masculineRow.rstrip(",") + "\n"
+                feminineRow = feminineRow.rstrip(",") + "\n"
+                data += masculineRow + feminineRow
+
+    with open(csv_file, mode="w", encoding="utf-8-sig") as file:
+        file.truncate()
+        file.write(data)
+
+    print("Gendered adjectives separated.")
+
+                    
+
+
 def main(file):
     print("Initiating...")
     
     replaceDelimiters(file)
     dropDescription(file)
     createFeminine(file)
+    separateGenders(file)
 
     print("Finished successfully!")
 
