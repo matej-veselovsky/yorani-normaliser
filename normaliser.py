@@ -152,6 +152,25 @@ def createDatabase(csvFile, dbFile):
             FOREIGN KEY (reference_id) REFERENCES yorani_words(yorani_id)
         );''')
 
+        with open(csvFile, mode="r", encoding="utf-8-sig") as file:
+            reader = csv.reader(file)
+            reader.__next__     # skips column names
+
+            temp = []
+            n = 1
+
+            for row in reader:
+                cur.execute('''INSERT INTO yorani_words(yorani_word) VALUES (?);''', (row[0],))
+
+                for element in row[1:]:
+                    temp.append([n, element])
+
+                n += 1
+
+            for row in temp:
+                cur.execute('''INSERT INTO czech_words(czech_word, reference_id) 
+                VALUES (?,?);''', (row[1], row[0]))
+
         con.commit()
     
     print(f"Database created at {dbFile}")
