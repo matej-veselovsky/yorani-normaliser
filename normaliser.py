@@ -12,6 +12,8 @@ def replaceDelimiters(csv_file):
         file.truncate()
         file.write(data)
 
+    print("Delimiters replaced.")
+
 
 def dropDescription(csv_file):
     data = ""
@@ -32,6 +34,8 @@ def dropDescription(csv_file):
     with open(csv_file, mode="w") as file:
         file.truncate()
         file.write(data)
+
+    print("Description dropped.")
 
 
 def createFeminine(csv_file):
@@ -71,7 +75,7 @@ def createFeminine(csv_file):
                     
                     stem = masculineForm[0:screener]
                     feminineForm = stem + suffix
-                    addition += "0" + feminineForm + ","
+                    addition += "0" + feminineForm + "," # 0 is a marker needed for the next step
                 else:
                     addition += element + ","
             data += addition.rstrip(",") + "\n"
@@ -80,11 +84,17 @@ def createFeminine(csv_file):
         file.truncate()
         file.write(data)
 
+    print("Feminines created.")
+
 
 def main(file):
+    print("Initiating...")
+    
     replaceDelimiters(file)
     dropDescription(file)
     createFeminine(file)
+
+    print("Finished successfully!")
 
 
 if (__name__ == "__main__"):
