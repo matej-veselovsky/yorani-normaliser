@@ -1,8 +1,8 @@
-# Normaliser for Yoranish dictionary
+# Normaliser for Yorani dictionary
 
   
 
-Main purpose of this program is to normalise the data in csv provided by creator of Yoranish language Lukáš Tomášek. He created the whole dictionary in an app in his phone. File formatting of exported csv turned out to be suboptimal for further use.
+Main purpose of this program is to normalise the data in csv provided by creator of Yorani language Lukáš Tomášek. He created the whole dictionary in an app in his phone. File formatting of exported csv turned out to be suboptimal for further use.
 
 ## Main problems with original csv:
 
@@ -12,4 +12,4 @@ Main purpose of this program is to normalise the data in csv provided by creator
 
 	> diobirayi /-raa,dobrý/pádný,dobrá/pádná
 
-Especially second problem poses a challenge. Czech translations of yoranish words are always wrote in full, in both masculine and feminine. Their yoranish counterparts are, sadly, not. Tomášek wrote only masculine version, with forward slash and change in ending for the feminine version. One of the things this normaliser tries to do is use the masculine version and the ending provided by the creator of the language and put them together, thus forming feminine version.
+Especially second problem poses a challenge. Czech translations of yorani words are always wrote in full, in both masculine and feminine. Their yorani counterparts are, sadly, not. Tomášek wrote only masculine version, with forward slash and change in ending for the feminine version. One of the things this normaliser tries to do is use the masculine version and the ending provided by the creator of the language and put them together, thus forming feminine version.
