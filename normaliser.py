@@ -58,21 +58,22 @@ def createFeminine(csvFile):
 
                     if masculineForm[0] == "-" or masculineForm[0] == "—":
                         continue
+
+                    screener = len(masculineForm) - 1
                     
                     if suffix == "cekaa":
-                        screener = len(masculineForm) - len("sikayi") - 1
+                        screener -= len("sikayi")
                     elif suffix == "wiā":
-                        screener = len(masculineForm) - len("veyi") - 1
+                        screener -= len("veyi")
                     elif suffix == "liā":
-                        screener = len(masculineForm) - len("neyi") - 1
+                        screener -= len("neyi")
                     elif suffix == "huā":
-                        screener = len(masculineForm) - len("gayi") - 1
+                        screener -= len("gayi")
                     elif suffix == "tuneā":
-                        screener = len(masculineForm) - len("neyi") - 1
+                        screener -= len("neyi")
                     elif suffix == "ā":
-                        screener = len(masculineForm) - len("neyi") - 1
+                        screener -= len("neyi")
                     else:
-                        screener = len(masculineForm) - 1
                         while (masculineForm[screener] != match):
                             screener -= 1
                     
