@@ -93,13 +93,12 @@ def createFeminine(csvFile):
 def separateGenders(csvFile):
     data = ""
     oddList = ""
-    n = 1
 
     with open(csvFile, mode="r", encoding="utf-8-sig") as file:
         reader = csv.reader(file)
 
         for row in reader:            
-            if row[1][0] != "0":
+            if row[1][0] != "0":        # check if row even needs to be separated
                 for element in row:
                     data += element + ","
                 data = data.rstrip(",") + "\n"
@@ -108,7 +107,7 @@ def separateGenders(csvFile):
                 masculineRow = ""
                 feminineRow = ""
                 
-                while row[firstRealPosition][0] == "-":
+                while row[firstRealPosition][0] == "-": # skips unnecessary suffixes
                     firstRealPosition += 1
 
                 masculineRow += row[0] + ","
@@ -121,20 +120,28 @@ def separateGenders(csvFile):
                         currentPosition += 1
                         continue
                     
-                    softMarkerElement = row[currentPosition].rstrip(" ")
-                    softMarker = softMarkerElement[-1]                    
+                    softMarkerElement = row[currentPosition].strip()
+                    softMarker = softMarkerElement[-1]                 
                     
-                    if softMarker == "í":                        
-                        masculineRow += row[currentPosition] + ","
-                        feminineRow += row[currentPosition] + ","
+                    if softMarker == "í":   # soft adjectives
+                        addition = ""
+                        seMarker = softMarkerElement[:3]
+
+                        if seMarker == "se ":
+                            addition += softMarkerElement[3:] + " " + seMarker.rstrip() + ","
+                        else:                        
+                            addition += softMarkerElement
+
+                        masculineRow += addition
+                        feminineRow += addition
+
                         
-                    else:
+                    else:                   # hard adjectives
                         skips = currentPosition + 1
 
-                        while skips < len(row):
-                            consideredElement = row[skips].rstrip(" ")
+                        while skips < len(row): # search for length of hard adjective chain
+                            consideredElement = row[skips].rstrip(" ") 
                             if consideredElement[-1] != "í":
-                                
                                 skips += 1
                             else:
                                 break
@@ -162,7 +169,6 @@ def separateGenders(csvFile):
                 masculineRow = masculineRow.rstrip(",") + "\n"
                 feminineRow = feminineRow.rstrip(",") + "\n"
                 data += masculineRow + feminineRow
-            n += 1
 
     with open(csvFile, mode="w", encoding="utf-8-sig") as file:
         file.truncate()
@@ -178,7 +184,7 @@ def raiseSeparatorWarning(row, type):
         print(f"Warning! Found odd separated length at {row}")
 
     if type == "position":
-        print(f"Warning! Found nonsencical order at {row}")
+        print(f"Warning! Found nonsensical order at {row}")
 
 
 def createDatabase(csvFile, dbFile):
