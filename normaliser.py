@@ -130,7 +130,7 @@ def separateGenders(csvFile):
                         if seMarker == "se ":
                             addition += softMarkerElement[3:] + " " + seMarker.rstrip() + ","
                         else:                        
-                            addition += softMarkerElement
+                            addition += softMarkerElement + ","
 
                         masculineRow += addition
                         feminineRow += addition
@@ -140,7 +140,7 @@ def separateGenders(csvFile):
                         skips = currentPosition + 1
 
                         while skips < len(row): # search for length of hard adjective chain
-                            consideredElement = row[skips].rstrip(" ") 
+                            consideredElement = row[skips].rstrip() 
                             if consideredElement[-1] != "í":
                                 skips += 1
                             else:
