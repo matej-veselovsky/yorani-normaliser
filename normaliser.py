@@ -69,6 +69,8 @@ def createFeminine(csvFile):
                         screener = len(masculineForm) - len("gayi") - 1
                     elif suffix == "tuneā":
                         screener = len(masculineForm) - len("neyi") - 1
+                    elif suffix == "ā":
+                        screener = len(masculineForm) - len("neyi") - 1
                     else:
                         screener = len(masculineForm) - 1
                         while (masculineForm[screener] != match):
@@ -90,11 +92,12 @@ def createFeminine(csvFile):
 
 def separateGenders(csvFile):
     data = ""
+    oddList = ""
 
     with open(csvFile, mode="r", encoding="utf-8-sig") as file:
         reader = csv.reader(file)
 
-        for row in reader:
+        for row in reader:            
             if row[1][0] != "0":
                 for element in row:
                     data += element + ","
@@ -106,24 +109,55 @@ def separateGenders(csvFile):
                 
                 while row[firstRealPosition][0] == "-":
                     firstRealPosition += 1
-                
-                softMarker = row[firstRealPosition][-1]
-                masculineRow += row[0] + ","
-                feminineRow += row[1][1:] + ","     #get rid of 0 
-                
-                if softMarker == "í":
-                    for i in range(firstRealPosition, len(row)):
-                        masculineRow += row[i] + ","
-                        feminineRow += row[i] + ","
-                    
-                else:
-                    firstFemPosition = 2 + (len(row) - firstRealPosition) / 2
 
-                    for i in range(firstRealPosition, len(row)):
-                        if i < firstFemPosition:
-                            masculineRow += row[i] + ","
-                        else:
-                            feminineRow += row[i] + ","
+                masculineRow += row[0] + ","
+                feminineRow += row[1][1:] + ","     #get rid of 0
+                currentPosition = firstRealPosition
+                skips = 0
+                
+                while currentPosition < len(row):
+
+                    if currentPosition < skips:
+                        currentPosition += 1
+                        continue
+
+                    softMarker = row[currentPosition][-1]
+
+                    if softMarker == "í":
+                        
+                        masculineRow += row[currentPosition] + ","
+                        feminineRow += row[currentPosition] + ","
+                        
+                    else:
+                        skips = currentPosition + 1
+
+                        while skips < len(row):
+                            if row[skips][-1] != "í":
+                                skips += 1
+                            else:
+                                break
+
+                        currentLength = skips - currentPosition
+                        firstFemPosition = currentPosition + currentLength / 2
+
+                        if currentLength % 2 != 0:
+                            oddList += row[0] + "\n"
+                            raiseSeparatorWarning(row[0], "odd")
+                            
+                            continue
+
+                        if firstFemPosition < currentPosition:
+                            raiseSeparatorWarning(row[0], "position")
+
+
+                        for i in range(currentPosition, skips):
+                            if i < firstFemPosition:
+                                masculineRow += row[i] + ","
+                            else:
+                                feminineRow += row[i] + ","
+
+                    currentPosition += 1
+
 
                 masculineRow = masculineRow.rstrip(",") + "\n"
                 feminineRow = feminineRow.rstrip(",") + "\n"
@@ -133,7 +167,17 @@ def separateGenders(csvFile):
         file.truncate()
         file.write(data)
 
+    with open("./testfiles/odds.txt", mode="w", encoding="utf-8-sig") as file:
+        file.write(oddList)
+
     print("Gendered adjectives separated.")
+
+def raiseSeparatorWarning(row, type):
+    if type == "odd":
+        print(f"Warning! Found odd separated length at {row}")
+
+    if type == "position":
+        print(f"Warning! Found nonsencical order at {row}")
 
 
 def createDatabase(csvFile, dbFile):
