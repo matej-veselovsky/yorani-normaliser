@@ -26,7 +26,7 @@ def dropDescription(csvFile):
             for element in row: #iterates through all elements of each row
                 
                 if element != "Difficult":  # Once we get to "Difficult" there are no more translations in that row, and we can discard the rest
-                    data += element + ","
+                    data += element.strip() + ","
                 else: 
                     data = data.rstrip(",") # Deletes the trailing comma
                     break # continue in next row
