@@ -1,6 +1,7 @@
 import sys
 import csv
 import sqlite3
+import mysql.connector
 
 
 def replaceDelimiters(csvFile):
@@ -191,15 +192,19 @@ def raiseSeparatorWarning(row, type):
 def createDatabase(csvFile, dbFile):
     with sqlite3.connect(dbFile) as con:
         cur = con.cursor()
+
+        con.create_collation("unicode_nocase",
+            lambda x, y : 1 if x.lower() > y.lower() \
+                else -1 if x.lower() < y.lower() else 0)
         
         cur.execute('''CREATE TABLE IF NOT EXISTS yorani_words (
             yorani_id INTEGER PRIMARY KEY,
-            yorani_word TEXT NOT NULL
+            yorani_word TEXT COLLATE unicode_nocase
         );''')
 
         cur.execute('''CREATE TABLE IF NOT EXISTS czech_words (
             czech_id INTEGER PRIMARY KEY,
-            czech_word TEXT NOT NULL,
+            czech_word TEXT COLLATE unicode_nocase,
             reference_id INTEGER,
             FOREIGN KEY (reference_id) REFERENCES yorani_words(yorani_id)
         );''')
@@ -228,7 +233,7 @@ def createDatabase(csvFile, dbFile):
     print(f"Database created at {dbFile}")
 
 
-def main(inputFile, outputFile):
+def main(inputFile, outputFile, databaseType):
     print("Initiating...")
     
     replaceDelimiters(inputFile)
@@ -237,6 +242,7 @@ def main(inputFile, outputFile):
     separateGenders(inputFile)
     createDatabase(inputFile, outputFile)
 
+    
     print("Finished successfully!")
 
 
