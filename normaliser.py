@@ -233,7 +233,7 @@ def createDatabase(csvFile, dbFile):
     print(f"Database created at {dbFile}")
 
 
-def main(inputFile, outputFile, databaseType):
+def main(inputFile, outputFile):
     print("Initiating...")
     
     replaceDelimiters(inputFile)
